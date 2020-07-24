@@ -52,6 +52,7 @@ On your server:
 
 ```js
 import { createApp, h, Fragment } from 'vue'
+import { renderToString } from '@vue/server-renderer'
 
 const app = createApp()
 const appHTML = await renderToString(app)
