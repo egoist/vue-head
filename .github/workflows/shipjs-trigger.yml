@@ -15,7 +15,8 @@ jobs:
           ref: master
       - uses: actions/setup-node@v1
         with:
-          registry-url: "https://registry.npmjs.org"
+          registry-url: 'https://registry.npmjs.org'
+          node-version: '14'
       - run: |
           if [ -f "yarn.lock" ]; then
             yarn install
