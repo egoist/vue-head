@@ -142,8 +142,10 @@ const HeadTag = defineComponent({
   setup({ tag, attrs }, { slots }) {
     const head = injectHead()
     const index = ref(-1)
+    const mounted = ref(false)
     onMounted(() => {
       index.value = head.addClientTag(tag, attrs.name || attrs.property)
+      mounted.value = true
       // Remove uncontrolled title tags
       if (tag === 'title' && !head.cleanedTitle) {
         head.cleanedTitle = true
@@ -168,7 +170,10 @@ const HeadTag = defineComponent({
         head.addServerTag(node)
         return null
       }
-      if (!head.shouldRenderTag(tag, index.value)) {
+      // Render tag of the last one similar
+      // And it should be rendered after first render, a.k.a mounted
+      // To get rid of SSR mismatching warning
+      if (!mounted.value || !head.shouldRenderTag(tag, index.value)) {
         return null
       }
       return h(
