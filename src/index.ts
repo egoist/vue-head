@@ -58,7 +58,8 @@ export class HeadProvider {
   indices: Indices
 
   // Clean head tags when mounted
-  cleaned: boolean
+  cleaned?: boolean
+  cleanedTitle?: boolean
 
   options: Required<Options>
 
@@ -73,7 +74,6 @@ export class HeadProvider {
     }
     this.indices = {}
     this.headTags = []
-    this.cleaned = false
   }
 
   install(app: App) {
@@ -145,7 +145,8 @@ const HeadTag = defineComponent({
     onMounted(() => {
       index.value = head.addClientTag(tag, attrs.name || attrs.property)
       // Remove uncontrolled title tags
-      if (tag === 'title') {
+      if (tag === 'title' && !head.cleanedTitle) {
+        head.cleanedTitle = true
         const els = document.head.querySelectorAll('title')
         if (els.length > 1) {
           document.head.removeChild(els[0])
@@ -190,7 +191,7 @@ export const Head = defineComponent({
         // <title> should always be removed
         // Since you should manage them using this plugin
         const ssrTags = document.head.querySelectorAll(
-          `[${head.options.ssrAttribute}=""], `,
+          `[${head.options.ssrAttribute}=""]`,
         )
         // `forEach` on `NodeList` is not supported in Googlebot, so use a workaround
         Array.prototype.forEach.call(ssrTags, (ssrTag) =>
@@ -201,7 +202,6 @@ export const Head = defineComponent({
   },
 
   render() {
-    const head = injectHead()
     const children = this.$slots.default!()
     return children
       .filter((child) => typeof child.type === 'string')
@@ -210,7 +210,7 @@ export const Head = defineComponent({
           HeadTag,
           {
             tag: child.type as string,
-            attrs: { ...child.props, [head.options.attribute]: '' },
+            attrs: { ...child.props },
           },
           () => child.children,
         ),
