@@ -1,3 +1,12 @@
+## [0.1.6](https://github.com/egoist/vue-head/compare/v0.1.5...v0.1.6) (2020-07-24)
+
+
+### Bug Fixes
+
+* ensure default slot exists ([b6cb05c](https://github.com/egoist/vue-head/commit/b6cb05cd2104837767e0f50d81af0b9e69bdf104))
+
+
+
 ## [0.1.5](https://github.com/egoist/vue-head/compare/v0.1.4...v0.1.5) (2020-07-24)
 
 
