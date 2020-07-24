@@ -1,7 +1,8 @@
 <template>
   <Head>
-    <title>hello world</title>
-    <title>hello world2</title>
+    <title>title 1</title>
+    <title>title 2</title>
+    <title>title 3</title>
     <meta name="description" content="hello" />
     <link />
     <br />
