@@ -1,0 +1,204 @@
+import {
+  App,
+  inject,
+  ref,
+  onMounted,
+  onUnmounted,
+  defineComponent,
+  h,
+  Teleport,
+  VNode,
+} from 'vue'
+import { isVoidTag } from '@vue/shared'
+
+const PROVIDE_KEY = `__head__`
+
+type Attrs = {
+  [k: string]: string | boolean
+}
+
+type MetaObj = {
+  name?: string
+  [k: string]: any
+}
+
+export interface HeadObject {
+  title?: string
+  meta?: MetaObj[]
+  bodyAttrs?: Attrs
+}
+
+type Indices = {
+  [tag: string]: number
+}
+
+const canUseDOM = typeof window !== 'undefined' && window.document
+
+const cascadingTags = ['title', 'meta']
+
+const hasOwn = (obj: object, key: string) =>
+  Object.prototype.hasOwnProperty.call(obj, key)
+
+const injectHead = () => {
+  const head = inject<HeadProvider>(PROVIDE_KEY)
+
+  if (!head) {
+    throw new Error(`You may forget to apply app.use(head)`)
+  }
+
+  return head
+}
+
+export type Options = {
+  ssrAttribute?: string
+}
+
+export class HeadProvider {
+  cascadingTags: {
+    // tag: array of name or property value
+    [tag: string]: Array<string | undefined>
+  }
+  headTags: VNode[]
+
+  indices: Indices
+
+  // Clean head tags when mounted
+  cleaned: boolean
+
+  options: Options
+
+  constructor(options: Options = {}) {
+    this.options = options
+    this.cascadingTags = {
+      title: [],
+      meta: [],
+    }
+    this.indices = {}
+    this.headTags = []
+    this.cleaned = false
+  }
+
+  install(app: App) {
+    app.config.globalProperties.$head = this
+    app.provide(PROVIDE_KEY, this)
+  }
+
+  addClientTag(tag: string, name?: string) {
+    // consider only cascading tags
+    if (this.cascadingTags[tag]) {
+      this.cascadingTags[tag].push(name)
+      // track indices synchronously
+      const { indices } = this
+      const index = hasOwn(indices, tag) ? indices[tag] + 1 : 0
+      indices[tag] = index
+      return index
+    }
+    return -1
+  }
+
+  removeClientTag(tag: string, index: number) {
+    const names = this.cascadingTags[tag]
+    if (names) {
+      names[index] = undefined
+    }
+  }
+
+  shouldRenderTag(tag: string, index: number) {
+    if (cascadingTags.indexOf(tag) !== -1) {
+      const names = this.cascadingTags[tag]
+      // check if the tag is the last one of similar
+      return names && names.lastIndexOf(names[index]) === index
+    }
+    return true
+  }
+
+  addServerTag(tagNode: VNode) {
+    if (canUseDOM) return
+    const { headTags = [] } = this
+    // tweak only cascading tags
+    if (typeof tagNode.type === 'string' && this.cascadingTags[tagNode.type]) {
+      const index = headTags.findIndex((prev) => {
+        const prevName = prev.props?.name || prev.props?.property
+        const nextName = tagNode.props?.name || tagNode.props?.property
+        return prev.type === tagNode.type && prevName === nextName
+      })
+      if (index !== -1) {
+        headTags.splice(index, 1)
+      }
+    }
+    headTags.push(tagNode)
+  }
+}
+
+const HeadTag = defineComponent({
+  props: {
+    tag: {
+      type: String,
+      required: true,
+    },
+    attrs: {
+      type: Object,
+      required: true,
+    },
+  },
+  setup({ tag, attrs }, { slots }) {
+    const head = injectHead()
+    const index = ref(-1)
+    onMounted(() => {
+      index.value = head.addClientTag(tag, attrs.name || attrs.property)
+    })
+    onUnmounted(() => {
+      head.removeClientTag(tag, index.value)
+    })
+
+    return () => {
+      const children = slots.default!()
+      if (!canUseDOM) {
+        const node = h(tag, { 'data-head': '', ...attrs }, children)
+        head.addServerTag(node)
+        return null
+      }
+      if (!head.shouldRenderTag(tag, index.value)) {
+        return null
+      }
+      return h(
+        Teleport,
+        { to: document.head },
+        h(tag, { ...attrs }, isVoidTag(tag) ? undefined : children),
+      )
+    }
+  },
+})
+
+export const Head = defineComponent({
+  setup() {
+    const head = injectHead()
+    onMounted(() => {
+      if (!head.cleaned) {
+        head.cleaned = true
+        // <title> should always be removed
+        // Since you should manage them using this plugin
+        const { ssrAttribute = 'data-head-ssr' } = head.options
+        const ssrTags = document.head.querySelectorAll(`[${ssrAttribute}=""]`)
+        // `forEach` on `NodeList` is not supported in Googlebot, so use a workaround
+        Array.prototype.forEach.call(ssrTags, (ssrTag) =>
+          ssrTag.parentNode.removeChild(ssrTag),
+        )
+      }
+    })
+  },
+  render() {
+    const children = this.$slots.default!()
+    return children
+      .filter((child) => typeof child.type === 'string')
+      .map((child) =>
+        h(
+          HeadTag,
+          { tag: child.type as string, attrs: child.props || {} },
+          () => child.children,
+        ),
+      )
+  },
+})
+
+export const createHead = (options: Options = {}) => new HeadProvider(options)
