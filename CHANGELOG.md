@@ -1,3 +1,9 @@
+## [0.1.2](https://github.com/egoist/vue-head/compare/v0.1.1...v0.1.2) (2020-07-24)
+
+### Bug Fixes
+
+Remove uncontrolled `<title>` tags
+
 ## 0.1.1 (2020-07-24)
 
 
