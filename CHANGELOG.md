@@ -1,3 +1,12 @@
+## [0.1.3](https://github.com/egoist/vue-head/compare/v0.1.2...v0.1.3) (2020-07-24)
+
+
+### Bug Fixes
+
+* remove uncontrolled title tags in mounted hook ([3853631](https://github.com/egoist/vue-head/commit/3853631eccd027842b5817a07324dc9e53e1f4b4))
+
+
+
 ## [0.1.2](https://github.com/egoist/vue-head/compare/v0.1.1...v0.1.2) (2020-07-24)
 
 ### Bug Fixes
