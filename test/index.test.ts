@@ -5,7 +5,7 @@ import pptr from 'puppeteer-core'
 
 test('main', async () => {
   const browser = await pptr.launch({
-    headless: false,
+    headless: true,
     executablePath: findChrome(),
   })
 
