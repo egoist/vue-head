@@ -151,7 +151,7 @@ const HeadTag = defineComponent({
     })
 
     return () => {
-      const children = slots.default!()
+      const children = slots.default && slots.default()
       if (!canUseDOM) {
         const node = h(
           tag,
@@ -198,7 +198,10 @@ export const Head = defineComponent({
   },
 
   render() {
-    const children = this.$slots.default!()
+    const children = this.$slots.default && this.$slots.default()
+    if (!children) {
+      return null
+    }
     return children
       .filter((child) => typeof child.type === 'string')
       .map((child) =>
