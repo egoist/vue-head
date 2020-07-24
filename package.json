@@ -10,6 +10,9 @@
   "cdn": "dist/iife/index.js",
   "jsdelivr": "dist/iife/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/egoist/vue-head.git"
