@@ -1,6 +1,9 @@
 # @egoist/vue-head
 
+[![npm version](https://badgen.net/npm/v/@egoist/vue-head)](https://npm.im/@egoist/vue-head) [![size](https://badgen.net/bundlephobia/minzip/@egoist/vue-head)](https://bundlephobia.com/result?p=@egoist/vue-head)
+
 Document `<head>` manager for Vue 3, SSR ready. (Experimental)
+
 
 ## Install
 
