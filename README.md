@@ -65,10 +65,20 @@ const finalHTML = `
 `
 ```
 
+## How does it work
+
+On the client-side, head tags are `<Teleport>`-ed to `document.head` element.
+
+On the server-side, head tags are stored as a VNode array, so you can render them to HTML using `Vue.renderToString`.
+
 ## TODO
 
 - Testing
 - Support `bodyAttrs`, `htmlAttrs`
+
+## Piror Art
+
+Inspired by `react-head`.
 
 ## License
 
