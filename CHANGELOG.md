@@ -1,3 +1,12 @@
+## [0.1.5](https://github.com/egoist/vue-head/compare/v0.1.4...v0.1.5) (2020-07-24)
+
+
+### Bug Fixes
+
+* render tags after mounted ([f279c94](https://github.com/egoist/vue-head/commit/f279c94907532deacbf6f6cdd7d37924534edaf5))
+
+
+
 ## [0.1.4](https://github.com/egoist/vue-head/compare/v0.1.3...v0.1.4) (2020-07-24)
 
 
