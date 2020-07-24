@@ -2,17 +2,6 @@ import { test } from 'uvu'
 import assert from 'uvu/assert'
 import findChrome from 'chrome-finder'
 import pptr from 'puppeteer-core'
-import { spawn, ChildProcessWithoutNullStreams } from 'child_process'
-
-let ps: ChildProcessWithoutNullStreams | undefined
-
-test.before(() => {
-  ps = spawn('yarn', ['vite'])
-})
-
-test.after(() => {
-  ps?.kill()
-})
 
 test('main', async () => {
   const browser = await pptr.launch({
@@ -21,9 +10,11 @@ test('main', async () => {
   })
 
   const page = await browser.newPage()
-  await page.goto('http://localhost:3000')
+  await page.goto('http://localhost:4000')
   const title = await page.title()
   assert.is(title, 'title 3')
+  await page.close()
+  await browser.close()
 })
 
 test.run()

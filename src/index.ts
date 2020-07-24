@@ -171,23 +171,24 @@ const HeadTag = defineComponent({
 })
 
 export const Head = defineComponent({
-  setup() {
-    const head = injectHead()
-    onMounted(() => {
-      if (!head.cleaned) {
-        head.cleaned = true
-        // <title> should always be removed
-        // Since you should manage them using this plugin
-        const { ssrAttribute = 'data-head-ssr' } = head.options
-        const ssrTags = document.head.querySelectorAll(`[${ssrAttribute}=""]`)
-        // `forEach` on `NodeList` is not supported in Googlebot, so use a workaround
-        Array.prototype.forEach.call(ssrTags, (ssrTag) =>
-          ssrTag.parentNode.removeChild(ssrTag),
-        )
-      }
-    })
-  },
   render() {
+    const head = injectHead()
+
+    // Clean before render since we remove `<title>` as well
+    if (!head.cleaned && canUseDOM) {
+      head.cleaned = true
+      // <title> should always be removed
+      // Since you should manage them using this plugin
+      const { ssrAttribute = 'data-head-ssr' } = head.options
+      const ssrTags = document.head.querySelectorAll(
+        `[${ssrAttribute}=""], title`,
+      )
+      // `forEach` on `NodeList` is not supported in Googlebot, so use a workaround
+      Array.prototype.forEach.call(ssrTags, (ssrTag) =>
+        ssrTag.parentNode.removeChild(ssrTag),
+      )
+    }
+
     const children = this.$slots.default!()
     return children
       .filter((child) => typeof child.type === 'string')
