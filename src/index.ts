@@ -9,7 +9,7 @@ import {
   Teleport,
   VNode,
 } from 'vue'
-import { isVoidTag } from '@vue/shared'
+import { isVoidTag, hasOwn } from '@vue/shared'
 
 const PROVIDE_KEY = `__head__`
 
@@ -33,11 +33,6 @@ type Indices = {
 }
 
 const canUseDOM = typeof window !== 'undefined' && window.document
-
-const cascadingTags = ['title', 'meta']
-
-const hasOwn = (obj: object, key: string) =>
-  Object.prototype.hasOwnProperty.call(obj, key)
 
 const injectHead = () => {
   const head = inject<HeadProvider>(PROVIDE_KEY)
@@ -65,10 +60,13 @@ export class HeadProvider {
   // Clean head tags when mounted
   cleaned: boolean
 
-  options: Options
+  options: Required<Options>
 
   constructor(options: Options = {}) {
-    this.options = options
+    this.options = {
+      ssrAttribute: 'data-head-ssr',
+      ...options,
+    }
     this.cascadingTags = {
       title: [],
       meta: [],
@@ -104,8 +102,8 @@ export class HeadProvider {
   }
 
   shouldRenderTag(tag: string, index: number) {
-    if (cascadingTags.indexOf(tag) !== -1) {
-      const names = this.cascadingTags[tag]
+    const names = this.cascadingTags[tag]
+    if (names) {
       // check if the tag is the last one of similar
       return names && names.lastIndexOf(names[index]) === index
     }
@@ -146,6 +144,13 @@ const HeadTag = defineComponent({
     const index = ref(-1)
     onMounted(() => {
       index.value = head.addClientTag(tag, attrs.name || attrs.property)
+      // Remove uncontrolled title tags
+      if (tag === 'title') {
+        const els = document.head.querySelectorAll('title')
+        if (els.length > 1) {
+          document.head.removeChild(els[0])
+        }
+      }
     })
     onUnmounted(() => {
       head.removeClientTag(tag, index.value)
@@ -154,7 +159,11 @@ const HeadTag = defineComponent({
     return () => {
       const children = slots.default!()
       if (!canUseDOM) {
-        const node = h(tag, { 'data-head': '', ...attrs }, children)
+        const node = h(
+          tag,
+          { [head.options.ssrAttribute]: '', ...attrs },
+          children,
+        )
         head.addServerTag(node)
         return null
       }
@@ -171,31 +180,38 @@ const HeadTag = defineComponent({
 })
 
 export const Head = defineComponent({
-  render() {
+  setup() {
     const head = injectHead()
 
-    // Clean before render since we remove `<title>` as well
-    if (!head.cleaned && canUseDOM) {
-      head.cleaned = true
-      // <title> should always be removed
-      // Since you should manage them using this plugin
-      const { ssrAttribute = 'data-head-ssr' } = head.options
-      const ssrTags = document.head.querySelectorAll(
-        `[${ssrAttribute}=""], title`,
-      )
-      // `forEach` on `NodeList` is not supported in Googlebot, so use a workaround
-      Array.prototype.forEach.call(ssrTags, (ssrTag) =>
-        ssrTag.parentNode.removeChild(ssrTag),
-      )
-    }
+    // Remove server-rendered tags
+    onMounted(() => {
+      if (!head.cleaned) {
+        head.cleaned = true
+        // <title> should always be removed
+        // Since you should manage them using this plugin
+        const ssrTags = document.head.querySelectorAll(
+          `[${head.options.ssrAttribute}=""], `,
+        )
+        // `forEach` on `NodeList` is not supported in Googlebot, so use a workaround
+        Array.prototype.forEach.call(ssrTags, (ssrTag) =>
+          ssrTag.parentNode.removeChild(ssrTag),
+        )
+      }
+    })
+  },
 
+  render() {
+    const head = injectHead()
     const children = this.$slots.default!()
     return children
       .filter((child) => typeof child.type === 'string')
       .map((child) =>
         h(
           HeadTag,
-          { tag: child.type as string, attrs: child.props || {} },
+          {
+            tag: child.type as string,
+            attrs: { ...child.props, [head.options.attribute]: '' },
+          },
           () => child.children,
         ),
       )
