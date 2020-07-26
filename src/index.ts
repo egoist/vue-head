@@ -129,6 +129,9 @@ export class HeadProvider {
 
 const HeadTag = defineComponent({
   name: 'HeadTag',
+
+  inheritAttrs: false,
+
   props: {
     tag: {
       type: String,
@@ -139,6 +142,7 @@ const HeadTag = defineComponent({
       required: true,
     },
   },
+
   setup({ tag, attrs }, { slots }) {
     const head = injectHead()
     const index = ref(-1)
@@ -179,6 +183,8 @@ const HeadTag = defineComponent({
 
 export const Head = defineComponent({
   name: 'Head',
+  
+  inheritAttrs: false,
 
   setup() {
     const head = injectHead()
