@@ -1,3 +1,12 @@
+## [0.1.7](https://github.com/egoist/vue-head/compare/v0.1.6...v0.1.7) (2020-07-26)
+
+
+### Bug Fixes
+
+* add component name for better debug experience ([fa19c43](https://github.com/egoist/vue-head/commit/fa19c43dc9b4d149b83bece7e86bff549caedb11))
+
+
+
 ## [0.1.6](https://github.com/egoist/vue-head/compare/v0.1.5...v0.1.6) (2020-07-24)
 
 
