@@ -13,21 +13,6 @@ import { isVoidTag, hasOwn } from '@vue/shared'
 
 const PROVIDE_KEY = `__head__`
 
-type Attrs = {
-  [k: string]: string | boolean
-}
-
-type MetaObj = {
-  name?: string
-  [k: string]: any
-}
-
-export interface HeadObject {
-  title?: string
-  meta?: MetaObj[]
-  bodyAttrs?: Attrs
-}
-
 type Indices = {
   [tag: string]: number
 }
@@ -183,7 +168,7 @@ const HeadTag = defineComponent({
 
 export const Head = defineComponent({
   name: 'Head',
-  
+
   inheritAttrs: false,
 
   setup() {
