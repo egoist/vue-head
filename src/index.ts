@@ -128,6 +128,7 @@ export class HeadProvider {
 }
 
 const HeadTag = defineComponent({
+  name: 'HeadTag',
   props: {
     tag: {
       type: String,
@@ -177,6 +178,8 @@ const HeadTag = defineComponent({
 })
 
 export const Head = defineComponent({
+  name: 'Head',
+
   setup() {
     const head = injectHead()
 
