@@ -1,3 +1,12 @@
+## [0.1.8](https://github.com/egoist/vue-head/compare/v0.1.7...v0.1.8) (2020-07-26)
+
+
+### Bug Fixes
+
+* disable attr inheritance ([acd3ce5](https://github.com/egoist/vue-head/commit/acd3ce5f08912462fc0332f7fdec6a65c4e50ff1))
+
+
+
 ## [0.1.7](https://github.com/egoist/vue-head/compare/v0.1.6...v0.1.7) (2020-07-26)
 
 
