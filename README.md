@@ -80,7 +80,7 @@ On the server-side, head tags are stored as a VNode array, so you can render the
 - Testing
 - Support `bodyAttrs`, `htmlAttrs`
 
-## Piror Art
+## Prior Art
 
 Inspired by `react-head`.
 
