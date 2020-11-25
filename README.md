@@ -56,7 +56,9 @@ import { renderToString } from '@vue/server-renderer'
 
 const app = createApp()
 const appHTML = await renderToString(app)
-const headHTML = await renderToString(h(Fragment, app.headTags))
+const headHTML = await renderToString(
+  h(Fragment, app.config.globalProperties.$head.headTags)
+)
 
 const finalHTML = `
 <html>
