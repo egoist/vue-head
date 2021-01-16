@@ -1,12 +1,10 @@
 import { test } from 'uvu'
 import assert from 'uvu/assert'
-import findChrome from 'chrome-finder'
-import pptr from 'puppeteer-core'
+import playwright from 'playwright-chromium'
 
 test('main', async () => {
-  const browser = await pptr.launch({
+  const browser = await playwright.chromium.launch({
     headless: true,
-    executablePath: findChrome(),
   })
 
   const page = await browser.newPage()
