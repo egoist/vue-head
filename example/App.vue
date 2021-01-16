@@ -4,6 +4,7 @@
     <title>title 2</title>
     <title>title 3</title>
     <meta name="description" content="hello" />
+    <meta name="description" content="actual hello" />
   </Head>
   <div id="mounted"></div>
 </template>
