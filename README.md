@@ -1,3 +1,5 @@
+# Use [@vueuse/head](https://github.com/vueuse/head) instead.
+
 # @egoist/vue-head
 
 [![npm version](https://badgen.net/npm/v/@egoist/vue-head)](https://npm.im/@egoist/vue-head) [![size](https://badgen.net/bundlephobia/minzip/@egoist/vue-head)](https://bundlephobia.com/result?p=@egoist/vue-head)
